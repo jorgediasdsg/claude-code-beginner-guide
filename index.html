@@ -1,50 +1,913 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claude Code Beginner Guide</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code para Iniciantes — comandos, exemplos e labs</title>
+  <meta name="description" content="Guia prático e memorável para começar no Claude Code com comandos reais, exemplos de prompt, botões de copiar e pequenos laboratórios de validação." />
+  <style>
+    :root {
+      --bg: #08111f;
+      --bg-2: #0d1728;
+      --panel: rgba(10, 18, 34, 0.84);
+      --panel-2: rgba(16, 28, 49, 0.92);
+      --line: rgba(149, 185, 255, 0.18);
+      --text: #edf3ff;
+      --muted: #9db0d1;
+      --accent: #7ce2ff;
+      --accent-2: #8bffbf;
+      --warn: #ffd27c;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+      --radius: 22px;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(124, 226, 255, 0.16), transparent 32%),
+        radial-gradient(circle at top right, rgba(139, 255, 191, 0.12), transparent 28%),
+        linear-gradient(180deg, #07101d 0%, #09111f 45%, #07101a 100%);
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .shell {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 64px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 12px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      border: 1px solid var(--line);
+      background: rgba(6, 12, 23, 0.78);
+      backdrop-filter: blur(20px);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      color: #06111a;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 25px rgba(124, 226, 255, 0.28);
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav a {
+      padding: 10px 14px;
+      color: var(--muted);
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: 140ms ease;
+    }
+
+    .nav a:hover {
+      color: var(--text);
+      border-color: var(--line);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 22px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-card, .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-main {
+      padding: 34px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero-main::after {
+      content: "";
+      position: absolute;
+      inset: auto -100px -100px auto;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(124, 226, 255, 0.22), transparent 62%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+    }
+
+    h1, h2, h3 { margin: 0 0 12px; line-height: 1.02; text-wrap: pretty; }
+    h1 { font-size: clamp(2.4rem, 5vw, 4.9rem); max-width: 11ch; }
+    h2 { font-size: clamp(1.6rem, 2.2vw, 2.4rem); }
+    h3 { font-size: 1.05rem; }
+    p { margin: 0; color: var(--muted); line-height: 1.62; }
+
+    .hero-copy {
+      max-width: 64ch;
+      font-size: 1.05rem;
+      margin-top: 14px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button, button.copy-btn, .mini-btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      font: inherit;
+      transition: 140ms ease;
+    }
+
+    .button.primary, .mini-btn.primary {
+      color: #041018;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border-color: transparent;
+      font-weight: 700;
+    }
+
+    .button:hover, button.copy-btn:hover, .mini-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(124, 226, 255, 0.42);
+      box-shadow: 0 10px 25px rgba(0,0,0,.22);
+    }
+
+    .hero-side {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .terminal-window {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(7,12,20,0.98), rgba(8,16,28,0.96));
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: var(--muted);
+      font-size: 0.87rem;
+    }
+
+    .terminal-dots { display: flex; gap: 8px; }
+    .terminal-dots span {
+      width: 10px; height: 10px; border-radius: 50%; display: inline-block;
+      background: rgba(255,255,255,0.18);
+    }
+    .terminal-dots span:nth-child(1){ background:#ff7676; }
+    .terminal-dots span:nth-child(2){ background:#ffd36e; }
+    .terminal-dots span:nth-child(3){ background:#82f3a6; }
+
+    .terminal-body {
+      padding: 18px;
+      font-family: var(--mono);
+      font-size: 0.93rem;
+      color: #dff7ff;
+      line-height: 1.8;
+      white-space: pre-wrap;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+      margin-top: 22px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .panel {
+      padding: 24px;
+    }
+
+    .section { margin-top: 24px; }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .tiny {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .checklist, .pill-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .checklist li {
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .checklist li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--accent-2);
+    }
+
+    .pill-list {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .pill-list li {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      color: #dce7ff;
+      text-align: center;
+    }
+
+    .command-card, .lab-card, .recipe-card {
+      position: relative;
+      padding: 20px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      overflow: hidden;
+    }
+
+    .command-card header, .lab-card header, .recipe-card header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+
+    .command-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(124, 226, 255, 0.09);
+      color: var(--accent);
+      font-size: 0.82rem;
+      border: 1px solid rgba(124, 226, 255, 0.16);
+    }
+
+    .code-block {
+      position: relative;
+      margin-top: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: #06101d;
+      overflow: hidden;
+    }
+
+    .code-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    pre {
+      margin: 0;
+      padding: 16px 16px 18px;
+      overflow: auto;
+      white-space: pre-wrap;
+      font-family: var(--mono);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      color: #e7f4ff;
+    }
+
+    .copy-btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      min-width: 90px;
+    }
+
+    .copy-btn.copied {
+      background: rgba(139, 255, 191, 0.12);
+      color: var(--accent-2);
+      border-color: rgba(139, 255, 191, 0.3);
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 16px;
+    }
+
+    .lesson-path {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .lesson-step {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .lesson-step strong.step-number {
+      display: grid;
+      place-items: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      color: #07111a;
+      background: linear-gradient(135deg, var(--warn), #fff2c1);
+      font-size: 1.1rem;
+    }
+
+    .footer {
+      margin-top: 32px;
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .callout {
+      margin-top: 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 210, 124, 0.2);
+      background: rgba(255, 210, 124, 0.06);
+      color: #ffe6b8;
+    }
+
+    .kicker {
+      color: var(--accent-2);
+      font-size: .82rem;
+      text-transform: uppercase;
+      letter-spacing: .11em;
+      margin-bottom: 8px;
+      display: inline-block;
+    }
+
+    @media (max-width: 980px) {
+      .hero, .grid-3, .grid-2, .stat-row { grid-template-columns: 1fr; }
+      .topbar { position: static; }
+      .section-head { align-items: start; flex-direction: column; }
+      h1 { max-width: none; }
+    }
+
+    @media (max-width: 640px) {
+      .shell { width: min(100% - 20px, 1200px); padding-top: 16px; }
+      .hero-main, .panel, .hero-side { padding: 20px; }
+      .nav { justify-content: flex-start; }
+      .button, button.copy-btn, .mini-btn { width: 100%; }
+      .hero-actions { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto; transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Claude Code Beginner Guide</h1>
-        <p>Your journey to mastering Claude Code starts here!</p>
-    </header>
-    <nav>
-        <ul>
-            <li><a href="#commands">Important Commands</a></li>
-            <li><a href="#skills">Recommended Skills</a></li>
-            <li><a href="#labs">Interactive Labs</a></li>
-        </ul>
-    </nav>
-    <section id="commands">
-        <h2>Important Commands</h2>
-        <p>Get acquainted with the essential commands in Claude Code.</p>
-        <!-- Commands content goes here -->
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge">&gt;_</div>
+        <div>
+          <div>Claude Code Kickstart</div>
+          <div class="tiny">comandos, exemplos e labs para começar rápido</div>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="#comandos">Comandos</a>
+        <a href="#prompts">Prompts</a>
+        <a href="#skills">Skills</a>
+        <a href="#labs">Labs</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <article class="hero-card hero-main">
+        <div class="eyebrow">Guia prático • PT-BR • iniciante → operacional</div>
+        <h1>Não comece pelo hype. Comece pelos comandos certos.</h1>
+        <p class="hero-copy">
+          Esta página foi pensada para quem abriu o Claude Code hoje e quer sair com repertório útil: instalar,
+          abrir um projeto, pedir ajuda do jeito certo, copiar comandos com 1 clique e validar se realmente entendeu.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#comandos">Ver comandos essenciais</a>
+          <a class="button" href="#labs">Ir direto para os labs</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat">
+            <strong>10</strong>
+            <span class="tiny">comandos e padrões para uso inicial sem enrolação</span>
+          </div>
+          <div class="stat">
+            <strong>3</strong>
+            <span class="tiny">labs orientados para marketing, CS e base de dados</span>
+          </div>
+          <div class="stat">
+            <strong>1 clique</strong>
+            <span class="tiny">para copiar exemplos e testar na prática</span>
+          </div>
+        </div>
+      </article>
+
+      <aside class="hero-card hero-side">
+        <div class="terminal-window">
+          <div class="terminal-header">
+            <div class="terminal-dots"><span></span><span></span><span></span></div>
+            <div>primeiros 90 segundos</div>
+          </div>
+          <div class="terminal-body">$ curl -fsSL https://claude.ai/install.sh | bash
+$ claude --version
+$ cd /path/to/seu-projeto
+$ claude
+
+&gt; /help
+&gt; "explique esta base em 5 bullets"
+&gt; "crie um plano para um dashboard de marketing"
+
+Resultado esperado:
+• entender o repositório
+• propor próximos passos
+• deixar você produtivo mais rápido</div>
+        </div>
+      </aside>
     </section>
-    <section id="skills">
-        <h2>Recommended Skills</h2>
-        <p>Explore the skills best suited for new users.</p>
-        <!-- Skills content goes here -->
+
+    <section class="panel section" id="comandos">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Bloco 1</span>
+          <h2>Comandos que valem decorar</h2>
+        </div>
+        <p class="tiny">Todos os blocos abaixo podem ser copiados com 1 clique.</p>
+      </div>
+
+      <div class="grid grid-2">
+        <article class="command-card">
+          <header>
+            <div>
+              <div class="command-chip">Instalação Linux / macOS</div>
+              <h3>Instalar Claude Code</h3>
+              <p>Use quando estiver configurando a máquina pela primeira vez.</p>
+            </div>
+          </header>
+          <div class="code-block">
+            <div class="code-meta"><span>instalação oficial</span><button class="copy-btn" data-copy="curl -fsSL https://claude.ai/install.sh | bash">Copiar</button></div>
+            <pre><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+          </div>
+        </article>
+
+        <article class="command-card">
+          <header>
+            <div>
+              <div class="command-chip">Checagem rápida</div>
+              <h3>Confirmar versão instalada</h3>
+              <p>Útil para validar se a instalação concluiu corretamente.</p>
+            </div>
+          </header>
+          <div class="code-block">
+            <div class="code-meta"><span>verificação</span><button class="copy-btn" data-copy="claude --version">Copiar</button></div>
+            <pre><code>claude --version</code></pre>
+          </div>
+        </article>
+
+        <article class="command-card">
+          <header>
+            <div>
+              <div class="command-chip">Entrada padrão</div>
+              <h3>Abrir Claude no projeto atual</h3>
+              <p>Este é o fluxo mais comum: entrar na pasta do projeto e iniciar a sessão.</p>
+            </div>
+          </header>
+          <div class="code-block">
+            <div class="code-meta"><span>início de sessão</span><button class="copy-btn" data-copy="cd /path/to/seu/projeto
+claude">Copiar</button></div>
+            <pre><code>cd /path/to/seu/projeto
+claude</code></pre>
+          </div>
+        </article>
+
+        <article class="command-card">
+          <header>
+            <div>
+              <div class="command-chip">Ajuda e recuperação</div>
+              <h3>Explorar ajuda e retomar contexto</h3>
+              <p>Dois comandos simples para não ficar perdido no começo.</p>
+            </div>
+          </header>
+          <div class="code-block">
+            <div class="code-meta"><span>dentro do Claude Code</span><button class="copy-btn" data-copy="/help
+/resume">Copiar</button></div>
+            <pre><code>/help
+/resume</code></pre>
+          </div>
+        </article>
+
+        <article class="command-card">
+          <header>
+            <div>
+              <div class="command-chip">Uso direto no terminal</div>
+              <h3>Rodar uma tarefa sem entrar em chat longo</h3>
+              <p>Bom para consultas objetivas e automações pequenas.</p>
+            </div>
+          </header>
+          <div class="code-block">
+            <div class="code-meta"><span>execução direta</span><button class="copy-btn" data-copy="claude \"fix the build error\"
+claude -p \"explique esta função\"">Copiar</button></div>
+            <pre><code>claude "fix the build error"
+claude -p "explique esta função"</code></pre>
+          </div>
+        </article>
+
+        <article class="command-card">
+          <header>
+            <div>
+              <div class="command-chip">Higiene de sessão</div>
+              <h3>Limpar e sair</h3>
+              <p>Essencial para recomeçar com contexto limpo quando a conversa degrada.</p>
+            </div>
+          </header>
+          <div class="code-block">
+            <div class="code-meta"><span>comandos de sessão</span><button class="copy-btn" data-copy="/clear
+/exit">Copiar</button></div>
+            <pre><code>/clear
+/exit</code></pre>
+          </div>
+        </article>
+      </div>
+
+      <div class="callout">
+        Dica prática: para iniciantes, o maior ganho não vem de “perguntas genéricas”, e sim de pedir ao Claude Code para
+        <strong>ler um contexto específico</strong>, resumir o que encontrou e sugerir próximos passos verificáveis.
+      </div>
     </section>
-    <section id="labs">
-        <h2>Interactive Labs</h2>
-        <p>Dive into hands-on labs to reinforce your learning.</p>
-        <!-- Labs content goes here -->
+
+    <section class="panel section" id="prompts">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Bloco 2</span>
+          <h2>Exemplos de prompts que funcionam melhor</h2>
+        </div>
+        <p class="tiny">Prompts curtos, com objetivo + contexto + formato de saída.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <article class="recipe-card">
+          <header>
+            <div>
+              <div class="command-chip">Marketing</div>
+              <h3>Transformar planilha em plano de dashboard</h3>
+            </div>
+          </header>
+          <p>Peça análise, KPIs, lacunas e layout recomendado para o dashboard.</p>
+          <div class="code-block">
+            <div class="code-meta"><span>prompt pronto</span><button class="copy-btn" data-copy="Analise esta planilha de marketing. Identifique métricas principais, dimensões úteis, anomalias, e proponha um dashboard executivo com 6 cards, 3 gráficos e uma tabela final. Responda em tópicos e diga quais colunas estão faltando.">Copiar</button></div>
+            <pre><code>Analise esta planilha de marketing. Identifique métricas principais,
+dimensões úteis, anomalias, e proponha um dashboard executivo com
+6 cards, 3 gráficos e uma tabela final. Responda em tópicos e diga
+quais colunas estão faltando.</code></pre>
+          </div>
+        </article>
+
+        <article class="recipe-card">
+          <header>
+            <div>
+              <div class="command-chip">Customer Success</div>
+              <h3>Ler base de clientes e sugerir priorização</h3>
+            </div>
+          </header>
+          <p>Ótimo para churn, health score, playbooks e segmentação de acompanhamento.</p>
+          <div class="code-block">
+            <div class="code-meta"><span>prompt pronto</span><button class="copy-btn" data-copy="Leia esta base de customer success e classifique os clientes em risco, atenção e saudável. Proponha um health score inicial, explique as regras e monte um plano de ação semanal para o time.">Copiar</button></div>
+            <pre><code>Leia esta base de customer success e classifique os clientes em risco,
+atenção e saudável. Proponha um health score inicial, explique as
+regras e monte um plano de ação semanal para o time.</code></pre>
+          </div>
+        </article>
+
+        <article class="recipe-card">
+          <header>
+            <div>
+              <div class="command-chip">Banco de dados</div>
+              <h3>Começar um modelo relacional simples</h3>
+            </div>
+          </header>
+          <p>Ideal quando você ainda está saindo de planilhas e precisa estruturar tabelas.</p>
+          <div class="code-block">
+            <div class="code-meta"><span>prompt pronto</span><button class="copy-btn" data-copy="Com base nesta planilha, proponha um desenho inicial de banco de dados. Separe entidades, chaves primárias, relacionamentos e campos obrigatórios. Depois escreva um SQL inicial de criação das tabelas.">Copiar</button></div>
+            <pre><code>Com base nesta planilha, proponha um desenho inicial de banco de dados.
+Separe entidades, chaves primárias, relacionamentos e campos
+obrigatórios. Depois escreva um SQL inicial de criação das tabelas.</code></pre>
+          </div>
+        </article>
+      </div>
     </section>
-    <section id="marketing">
-        <h2>Marketing and Customer Success Dashboards</h2>
-        <p>Learn how to build engaging dashboards from spreadsheets.</p>
-        <!-- Marketing and dashboards content goes here -->
+
+    <section class="panel section" id="skills">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Bloco 3</span>
+          <h2>Skills e hábitos que mais aceleram iniciantes</h2>
+        </div>
+        <p class="tiny">Aqui, “skills” significa repertório operacional e instruções reutilizáveis.</p>
+      </div>
+
+      <div class="grid grid-2">
+        <article>
+          <h3>As 5 skills mentais mais úteis no começo</h3>
+          <ul class="checklist">
+            <li><strong>Contexto antes de solução:</strong> peça primeiro um resumo da base, depois a execução.</li>
+            <li><strong>Saída estruturada:</strong> sempre defina o formato: tabela, checklist, SQL, plano em etapas.</li>
+            <li><strong>Validação explícita:</strong> peça para apontar lacunas, riscos e como testar.</li>
+            <li><strong>Iteração curta:</strong> uma tarefa por vez; evite “faça tudo” em um único prompt.</li>
+            <li><strong>Reuso:</strong> salve prompts bons como modelos internos do seu time.</li>
+          </ul>
+        </article>
+
+        <article>
+          <h3>Pacotes de uso recomendados</h3>
+          <ul class="pill-list">
+            <li>Resumo de planilhas</li>
+            <li>Desenho de dashboards</li>
+            <li>Classificação de clientes</li>
+            <li>Leitura de CSV</li>
+            <li>Modelagem SQL inicial</li>
+            <li>Checklist de qualidade</li>
+            <li>Playbook de onboarding</li>
+            <li>Prompt de revisão final</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="lesson-path">
+        <div class="lesson-step">
+          <strong class="step-number">1</strong>
+          <div>
+            <h3>Primeiro peça leitura</h3>
+            <p>Ex.: “leia esta pasta / planilha e me diga como está organizada, o que falta e quais perguntas devo responder primeiro”.</p>
+          </div>
+        </div>
+        <div class="lesson-step">
+          <strong class="step-number">2</strong>
+          <div>
+            <h3>Depois peça transformação</h3>
+            <p>Ex.: “agora transforme isso em um dashboard executivo / health score / estrutura SQL”.</p>
+          </div>
+        </div>
+        <div class="lesson-step">
+          <strong class="step-number">3</strong>
+          <div>
+            <h3>Por fim peça verificação</h3>
+            <p>Ex.: “liste os riscos, premissas e como validar se a solução faz sentido antes de eu publicar”.</p>
+          </div>
+        </div>
+      </div>
     </section>
-    <section id="databases">
-        <h2>Starting with Databases</h2>
-        <p>Begin your journey into database management with Claude Code.</p>
-        <!-- Database content goes here -->
+
+    <section class="panel section" id="labs">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Bloco 4</span>
+          <h2>Mini labs para validar o conhecimento</h2>
+        </div>
+        <p class="tiny">Cada lab tem objetivo, prompt inicial e o que você deve checar.</p>
+      </div>
+
+      <div class="grid grid-3">
+        <article class="lab-card">
+          <header>
+            <div>
+              <div class="command-chip">Lab 1 • Marketing</div>
+              <h3>Dashboard a partir de planilha</h3>
+            </div>
+          </header>
+          <p>Pegue um CSV com campanhas, canais, leads e custo. Faça o Claude Code propor um dashboard para liderança.</p>
+          <div class="code-block">
+            <div class="code-meta"><span>prompt inicial</span><button class="copy-btn" data-copy="Analise este CSV de marketing e proponha um dashboard para liderança com KPIs, filtros, gráficos e alertas. Também diga quais métricas são de vaidade e quais são acionáveis.">Copiar</button></div>
+            <pre><code>Analise este CSV de marketing e proponha um dashboard para liderança
+com KPIs, filtros, gráficos e alertas. Também diga quais métricas são
+de vaidade e quais são acionáveis.</code></pre>
+          </div>
+          <ul class="checklist">
+            <li>O dashboard separa aquisição, conversão e custo?</li>
+            <li>Há sugestão de filtros por canal, período e campanha?</li>
+            <li>O Claude apontou colunas ausentes?</li>
+          </ul>
+        </article>
+
+        <article class="lab-card">
+          <header>
+            <div>
+              <div class="command-chip">Lab 2 • CS</div>
+              <h3>Health score de clientes</h3>
+            </div>
+          </header>
+          <p>Use uma planilha com clientes, logins, tickets, MRR e NPS para testar uma classificação simples.</p>
+          <div class="code-block">
+            <div class="code-meta"><span>prompt inicial</span><button class="copy-btn" data-copy="Com esta planilha de clientes, crie uma primeira versão de health score. Explique pesos, faixas de risco e um plano de ação para contas críticas nos próximos 7 dias.">Copiar</button></div>
+            <pre><code>Com esta planilha de clientes, crie uma primeira versão de health
+score. Explique pesos, faixas de risco e um plano de ação para contas
+críticas nos próximos 7 dias.</code></pre>
+          </div>
+          <ul class="checklist">
+            <li>As regras são explicadas de forma legível?</li>
+            <li>Há categorias claras de risco?</li>
+            <li>Existe plano de ação e não apenas diagnóstico?</li>
+          </ul>
+        </article>
+
+        <article class="lab-card">
+          <header>
+            <div>
+              <div class="command-chip">Lab 3 • Dados</div>
+              <h3>Primeiro passo para banco de dados</h3>
+            </div>
+          </header>
+          <p>Saia de uma planilha única para um desenho relacional inicial com SQL de criação.</p>
+          <div class="code-block">
+            <div class="code-meta"><span>prompt inicial</span><button class="copy-btn" data-copy="Pegue esta planilha e desenhe um banco relacional inicial. Defina tabelas, relacionamentos, chaves e escreva um SQL base para PostgreSQL.">Copiar</button></div>
+            <pre><code>Pegue esta planilha e desenhe um banco relacional inicial. Defina
+tabelas, relacionamentos, chaves e escreva um SQL base para
+PostgreSQL.</code></pre>
+          </div>
+          <ul class="checklist">
+            <li>As entidades foram separadas de forma lógica?</li>
+            <li>Há PK/FK consistentes?</li>
+            <li>O SQL é utilizável e não apenas conceitual?</li>
+          </ul>
+        </article>
+      </div>
     </section>
-    <footer>
-        <p>&copy; 2026 Claude Code Beginner Guide. All rights reserved.</p>
+
+    <section class="panel section">
+      <div class="section-head">
+        <div>
+          <span class="kicker">Bloco 5</span>
+          <h2>Roteiro de 15 minutos para um iniciante</h2>
+        </div>
+        <p class="tiny">Use este roteiro para testar se a pessoa realmente entendeu o básico.</p>
+      </div>
+
+      <div class="lesson-path">
+        <div class="lesson-step">
+          <strong class="step-number">A</strong>
+          <div>
+            <h3>Minuto 1–3</h3>
+            <p>Instalar, rodar <code>claude --version</code> e abrir um projeto com <code>claude</code>.</p>
+          </div>
+        </div>
+        <div class="lesson-step">
+          <strong class="step-number">B</strong>
+          <div>
+            <h3>Minuto 4–7</h3>
+            <p>Pedir um resumo de uma planilha ou pasta real e conferir se o modelo entendeu o contexto.</p>
+          </div>
+        </div>
+        <div class="lesson-step">
+          <strong class="step-number">C</strong>
+          <div>
+            <h3>Minuto 8–11</h3>
+            <p>Pedir uma transformação: dashboard, health score ou SQL inicial.</p>
+          </div>
+        </div>
+        <div class="lesson-step">
+          <strong class="step-number">D</strong>
+          <div>
+            <h3>Minuto 12–15</h3>
+            <p>Fechar com validação: “quais riscos, premissas e próximos testes você recomenda?”</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Feito para acelerar o primeiro uso do Claude Code com exemplos práticos, sem marketing vazio.
     </footer>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll('.copy-btn');
+    for (const button of buttons) {
+      button.addEventListener('click', async () => {
+        const text = button.getAttribute('data-copy') || '';
+        try {
+          await navigator.clipboard.writeText(text);
+          const original = button.textContent;
+          button.textContent = 'Copiado';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.textContent = original;
+            button.classList.remove('copied');
+          }, 1400);
+        } catch {
+          button.textContent = 'Falhou';
+          setTimeout(() => {
+            button.textContent = 'Copiar';
+          }, 1400);
+        }
+      });
+    }
+  </script>
 </body>
 </html>
